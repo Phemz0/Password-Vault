@@ -1,0 +1,105 @@
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.fernet import Fernet
+from argon2 import PasswordHasher
+import random
+import numpy
+import time
+import sys
+import base64
+import os
+
+def banner():
+    print("""
+                                                                                                                       
+ ██▓███   ▄▄▄        ██████   ██████  █     █░ ▒█████   ██▀███  ▓█████▄  ██▒   █▓ ▄▄▄       █    ██  ██▓    ▄▄▄█████▓   
+▓██░  ██▒▒████▄    ▒██    ▒ ▒██    ▒ ▓█░ █ ░█░▒██▒  ██▒▓██ ▒ ██▒▒██▀ ██▌▓██░   █▒▒████▄     ██  ▓██▒▓██▒    ▓  ██▒ ▓▒   
+▓██░ ██▓▒▒██  ▀█▄  ░ ▓██▄   ░ ▓██▄   ▒█░ █ ░█ ▒██░  ██▒▓██ ░▄█ ▒░██   █▌ ▓██  █▒░▒██  ▀█▄  ▓██  ▒██░▒██░    ▒ ▓██░ ▒░   
+▒██▄█▓▒ ▒░██▄▄▄▄██   ▒   ██▒  ▒   ██▒░█░ █ ░█ ▒██   ██░▒██▀▀█▄  ░▓█▄   ▌  ▒██ █░░░██▄▄▄▄██ ▓▓█  ░██░▒██░    ░ ▓██▓ ░    
+▒██▒ ░  ░ ▓█   ▓██▒▒██████▒▒▒██████▒▒░░██▒██▓ ░ ████▓▒░░██▓ ▒██▒░▒████▓    ▒▀█░   ▓█   ▓██▒▒▒█████▓ ░██████▒  ▒██▒ ░    
+▒▓▒░ ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░▒ ▒▓▒ ▒ ░░ ▓░▒ ▒  ░ ▒░▒░▒░ ░ ▒▓ ░▒▓░ ▒▒▓  ▒    ░ ▐░   ▒▒   ▓▒█░░▒▓▒ ▒ ▒ ░ ▒░▓  ░  ▒ ░░      
+░▒ ░       ▒   ▒▒ ░░ ░▒  ░ ░░ ░▒  ░ ░  ▒ ░ ░    ░ ▒ ▒░   ░▒ ░ ▒░ ░ ▒  ▒    ░ ░░    ▒   ▒▒ ░░░▒░ ░ ░ ░ ░ ▒  ░    ░       
+░░         ░   ▒   ░  ░  ░  ░  ░  ░    ░   ░  ░ ░ ░ ▒    ░░   ░  ░ ░  ░      ░░    ░   ▒    ░░░ ░ ░   ░ ░     ░         
+               ░  ░      ░        ░      ░        ░ ░     ░        ░          ░        ░  ░   ░         ░  ░            
+                                                                 ░           ░                                          
+""")
+    
+symbols = ["!","£","$","%","^","&","*","#","@","?"]
+chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+         "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D",
+         "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+         "T", "U", "V", "W", "X", "Y", "Z"]
+
+
+def menu():
+    name = input("Enter your name: ")
+    menuChoice = input(f"""
+         -=Hello=-
+And welcome to PasswordVault    
+        
+Start| -start
+Save | -save
+Exit | -exit      
+({name}): """).lower()
+
+    if menuChoice == "-start":
+        main(symbols, chars, name)
+    elif menuChoice == "-save":
+        savePassword()
+    elif menuChoice == "-exit":
+        print(f"Exiting program, thanks for using PasswordVault {name}")
+        sys.exit(0)
+
+def main(symbols, chars, name):
+    while True:
+        try:
+            passLen = int(input("Password length: "))
+            if 5 <= passLen <= 20:
+                print(f"Length: {passLen}")
+                break
+            else:
+                print("Invalid input, length parameters are 5 - 20 chars")
+        except ValueError:
+            print("Answer must be an int within the length parameters of 5 - 20 ")
+
+    symbolCheck = input("Include symbols in the password? Y/N ").upper()
+
+    while True:
+        try:
+            symbolAmount = max(1, passLen // 3)
+            currentPassword = []
+
+            if symbolCheck == "Y":
+                symbolDec = input(f"How many symbols should your password include? (press enter for recommended amount): ")
+                if symbolDec.strip() == "":
+                    useSymbols = symbolAmount
+                else:
+                    useSymbols = int(symbolDec.strip())
+
+                for _ in range(useSymbols):
+                    currentPassword.append(random.choice(symbols))
+                for _ in range(passLen - useSymbols):
+                    currentPassword.append(random.choice(chars))
+                    
+            elif symbolCheck == "N":
+                for _ in range(passLen):
+                    currentPassword.append(random.choice(chars))
+            else:
+                print("Enter Y/N for symbol choice.")
+                continue
+
+            random.shuffle(currentPassword)
+            finalPassword = ''.join(currentPassword)
+            print(f"\nGenerated password for {name}: {finalPassword}")
+            break
+
+        except ValueError:
+            print("Invalid number for symbol count.")
+                        
+        
+def savePassword():
+    print ("eeee")
+banner()
+menu()     
+# main(symbols, chars)
+
