@@ -1,10 +1,12 @@
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 from cryptography.fernet import Fernet
-from argon2 import PasswordHasher
+# from argon2 import PasswordHasher
+import threading
 import random
 import numpy
 import time
+from tqdm import tqdm
 import sys
 import base64
 import os
@@ -30,6 +32,44 @@ chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "
          "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
          "T", "U", "V", "W", "X", "Y", "Z"]
 
+def masterPasswordObj():
+    passLength = 20
+    masterPassword = []
+
+    key = Fernet.generate_key()
+    f = Fernet(key)
+
+
+
+
+    masterPassword = input(f"Please enter the Master Password, this password will be used to access your encrypted vault").encode()
+    
+    salt = b'\x00'*16
+
+    kdf = PBKDF2HMAC(
+    algorithm=hashes.SHA256(),
+    length=32,
+    salt=salt,
+    iterations=10000, #Change after testing.  
+)
+    key = base64.urlsafe_b64encode(kdf.derive(masterPassword))
+    fernet = Fernet(key)
+
+    createFile = open("NotPasswords.txt", "x")
+    time.sleep(1.5)
+    with open("NotPasswords.txt", "w") as keyfile:
+        keyfile.write(key.decode())
+
+    for i in tqdm(range(100)):
+        time.sleep(0.02)
+    time.sleep(1)
+    print("Key has been written to the file NotPasswords.txt ")
+
+
+# Could generate a random string from the Chars array, assign it to the token and just output the key to the user. 
+
+
+
 
 def menu():
     name = input("Enter your name: ")
@@ -45,7 +85,7 @@ Exit | -exit
     if menuChoice == "-start":
         main(symbols, chars, name)
     elif menuChoice == "-save":
-        savePassword()
+        savePassword(menu)
     elif menuChoice == "-exit":
         print(f"Exiting program, thanks for using PasswordVault {name}")
         sys.exit(0)
@@ -91,15 +131,37 @@ def main(symbols, chars, name):
             random.shuffle(currentPassword)
             finalPassword = ''.join(currentPassword)
             print(f"\nGenerated password for {name}: {finalPassword}")
-            break
+            
+            stage2 = input("Would you save or exit? \n-save / -exit")
+            if stage2 == "-save".lower():
+                savePassword()
+                break
+            elif stage2 == "-exit":
+                print(f"Exiting program, thanks for using PasswordVault {name}")
+                sys.exit(0)
+                break
 
         except ValueError:
             print("Invalid number for symbol count.")
-                        
-        
+                
+
+def encryptFile(key):
+    print ("e")
+
 def savePassword():
-    print ("eeee")
+    
+    key = Fernet.generate_key()
+
+    with open("fileKey.key", "wb") as f:
+        f.write(key)
+
+
+
+
+
+
+
+masterPasswordObj()
 banner()
 menu()     
 # main(symbols, chars)
-
