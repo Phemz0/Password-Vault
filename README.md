@@ -7,3 +7,5 @@
 
 
 
+- pyinstaller --onefile --console --hidden-import=cryptography.hazmat.backends.openssl.backend yourscript.py
+- Above for both
