@@ -9,3 +9,5 @@
 - PasswordVault only supports Python 3.12 for the below: 
 - pyinstaller --onefile --console --hidden-import=cryptography.hazmat.backends.openssl.backend yourscript.py
 - Above for both files 
+
+- Will add obfuscation
