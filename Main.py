@@ -67,10 +67,10 @@ def main():
                 
         while True:
             try:
-menu_text = """
+                menu_text = """
 ╔══════════════════════════════════════════════╗
 ║            SECURE MODE ACTIVATED             ║
-║               (̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄               ║
+║               (̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄                        ║
 ╠══════════════════════════════════════════════╣
 ║                                              ║
 ║  [1]  NEW ENTRY                              ║
@@ -80,7 +80,7 @@ menu_text = """
 ╚══════════════════════════════════════════════╝
   root@vault:~# """
 
-menuChoice = input(menu_text).lower()                    
+                menuChoice = input(menu_text).lower()                    
                                 
                 # addNewEntry = input("Would you like to add a new entry? y/n \n").upper()
                 if menuChoice == "-start":
