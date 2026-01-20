@@ -67,18 +67,20 @@ def main():
                 
         while True:
             try:
-                menuChoice = input("""
-                                   
-Secure Mode Activated  (̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄ 
-                             
-         -=Hello=-
-And welcome to PasswordVault          
-                                
-    New entry         | -start
-    Display Passwords | -vault
-    Exit              | -exit
-        
-you: """).lower()                          
+menu_text = """
+╔══════════════════════════════════════════════╗
+║            SECURE MODE ACTIVATED             ║
+║               (̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄               ║
+╠══════════════════════════════════════════════╣
+║                                              ║
+║  [1]  NEW ENTRY                              ║
+║  [2]  DISPLAY PASSWORDS                      ║
+║  [E]  EXIT SYSTEM                            ║
+║                                              ║
+╚══════════════════════════════════════════════╝
+  root@vault:~# """
+
+menuChoice = input(menu_text).lower()                    
                                 
                 # addNewEntry = input("Would you like to add a new entry? y/n \n").upper()
                 if menuChoice == "-start":
